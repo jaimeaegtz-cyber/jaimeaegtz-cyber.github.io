@@ -382,12 +382,14 @@ document
 if(!nombre)
 return;
 
-const cantidad =
+const cantidadNueva =
+parseInt(
 document
 .getElementById(
 "nueva-cantidad"
 )
-.value;
+.value
+);
 
 const hoja =
 document
@@ -395,6 +397,56 @@ document
 "selector-pestaña"
 )
 .value;
+
+try{
+
+const url =
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(hoja)}`;
+
+const r =
+await fetch(url);
+
+const txt =
+await r.text();
+
+const data =
+JSON.parse(
+txt.slice(
+txt.indexOf("{"),
+txt.lastIndexOf("}")+1
+)
+);
+
+const filas =
+data.table.rows;
+
+let encontrado =
+false;
+
+for(
+let i=0;
+i<filas.length;
+i++
+){
+
+const nombreExistente =
+filas[i]?.c?.[0]?.v
+?.toString()
+.trim();
+
+const cantidadActual =
+parseInt(
+filas[i]?.c?.[1]?.v||0
+);
+
+if(
+nombreExistente &&
+nombreExistente
+.toLowerCase()
+===
+nombre
+.toLowerCase()
+){
 
 await fetch(
 SCRIPT_URL,
@@ -404,18 +456,91 @@ method:"POST",
 body:
 JSON.stringify({
 
-action:"add",
+action:
+"update",
 
-sheetName:hoja,
+sheetName:
+hoja,
 
-componente:nombre,
+fila:
+i+2,
 
-cantidad
+cantidad:
+cantidadActual
++
+cantidadNueva
 
 })
 }
 );
 
+encontrado =
+true;
+
+break;
+
+}
+
+}
+
+if(
+!encontrado
+){
+
+await fetch(
+SCRIPT_URL,
+{
+method:"POST",
+
+body:
+JSON.stringify({
+
+action:
+"add",
+
+sheetName:
+hoja,
+
+componente:
+nombre,
+
+cantidad:
+cantidadNueva
+
+})
+}
+);
+
+}
+
+document
+.getElementById(
+"nuevo-nombre"
+)
+.value="";
+
+document
+.getElementById(
+"nueva-cantidad"
+)
+.value=1;
+
+cargarDatos();
+
+}
+catch(e){
+
+alert(
+"Error agregando componente"
+);
+
+console.log(
+e
+);
+
+}
+
+}
 cargarDatos();
 
 }
