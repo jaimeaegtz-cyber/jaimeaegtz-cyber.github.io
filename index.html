@@ -7,31 +7,241 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Inventario Pro</title>
+<title>Inventario </title>
 
 <style>
-/* CONTENEDOR DE OBJETOS */
-#cuerpo-tabla{
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:
+linear-gradient(
+180deg,
+#020817,
+#000f3a
+);
+
+margin:20px;
+
+color:white;
+
+}
+
+/* CONTENEDOR */
+
+.contenedor{
+
+max-width:1600px;
+
+margin:auto;
+
+padding:20px;
+
+}
+
+/* TITULO */
+
+h1{
+
+font-size:36px;
+
+margin-bottom:25px;
+
+}
+
+/* BLOQUES */
+
+.seccion{
+
+background:
+rgba(
+255,
+255,
+255,
+.05
+);
+
+backdrop-filter:
+blur(15px);
+
+padding:30px;
+
+border-radius:30px;
+
+margin-bottom:35px;
+
+border:
+1px solid
+rgba(
+255,
+255,
+255,
+.08
+);
+
+}
+
+/* INPUTS */
+
+.flex{
+
+display:flex;
+
+gap:20px;
+
+align-items:end;
+
+flex-wrap:wrap;
+
+}
+
+.control{
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+flex:1;
+
+}
+
+label{
+
+font-size:14px;
+
+opacity:.8;
+
+}
+
+input,
+select{
+
+height:64px;
+
+padding:0 20px;
+
+background:
+
+rgba(
+255,
+255,
+255,
+.05
+);
+
+border:none;
+
+border-radius:22px;
+
+color:white;
+
+font-size:22px;
+
+outline:none;
+
+}
+
+/* BOTONES */
+
+button{
+
+height:82px;
+
+padding:0 28px;
+
+background:
+
+linear-gradient(
+135deg,
+#1ea1ff,
+#2563eb
+);
+
+border:none;
+
+border-radius:22px;
+
+color:white;
+
+font-size:20px;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+button:hover{
+
+transform:
+translateY(-3px);
+
+}
+
+/* CARGANDO */
+
+#loading{
+
+display:none;
+
+padding:20px;
+
+background:
+
+rgba(
+14,
+165,
+233,
+.2
+);
+
+border-radius:18px;
+
+margin-bottom:25px;
+
+}
+
+/* TABLA → GRID */
+
+table{
+
+width:100%;
+
+display:block;
+
+}
+
+thead{
+
+display:none;
+
+}
+
+tbody{
+
 display:grid;
 
 grid-template-columns:
+
 repeat(
-auto-fill,
+auto-fit,
 minmax(
-320px,
+340px,
 1fr
 )
+
 );
 
-gap:28px;
+gap:30px;
 
-align-items:start;
-
-padding-top:20px;
 }
 
-/* TARJETA */
-#cuerpo-tabla tr{
+/* TARJETAS */
+
+tbody tr{
 
 display:flex;
 
@@ -40,65 +250,69 @@ flex-direction:column;
 justify-content:space-between;
 
 background:
+
 linear-gradient(
 180deg,
 #111827,
-#0f172a
+#172036
 );
 
-border:
+border-radius:30px;
 
-1px solid
-rgba(
-255,
-255,
-255,
-.06
-);
+padding:30px;
 
-border-radius:24px;
-
-padding:28px;
-
-min-height:260px;
+min-height:280px;
 
 box-shadow:
-0 12px 40px
+
+0 10px 40px
+
 rgba(
 0,
 0,
 0,
-.35
+.45
 );
 
-transition:.25s;
+transition:.2s;
 
 }
 
-#cuerpo-tabla tr:hover{
+tbody tr:hover{
 
 transform:
-translateY(-4px);
+
+translateY(-6px);
+
+}
+
+/* CELDAS */
+
+tbody td{
+
+padding:0;
+
+border:none;
 
 }
 
 /* NOMBRE */
-#cuerpo-tabla td:first-child{
 
-font-size:20px;
+tbody td:first-child{
 
-font-weight:700;
+font-size:24px;
+
+font-weight:800;
 
 color:#67e8f9;
 
-padding-bottom:20px;
-
-border:none;
+margin-bottom:40px;
 
 }
 
-/* CELDA CANTIDAD */
-#cuerpo-tabla td:nth-child(2){
+/* CANTIDAD */
+
+tbody td:nth-child(2){
 
 display:flex;
 
@@ -106,57 +320,51 @@ justify-content:center;
 
 align-items:center;
 
-gap:14px;
+gap:16px;
 
-border:none;
+margin-bottom:35px;
 
 }
 
 /* NUMERO */
-#cuerpo-tabla strong{
+
+tbody strong{
+
+width:110px;
+
+height:80px;
 
 display:flex;
 
-align-items:center;
-
 justify-content:center;
 
-width:90px;
-
-height:74px;
+align-items:center;
 
 background:
 
 linear-gradient(
 135deg,
 #0ea5e9,
-#0284c7
+#2563eb
 );
 
 border-radius:999px;
 
-font-size:28px;
+font-size:40px;
 
-font-weight:800;
-
-color:white;
-
-text-align:center;
+font-weight:900;
 
 }
 
-/* BOTONES + - */
+/* + - */
+
 .btn-sm{
 
-width:64px;
+width:70px;
 
-height:64px;
+height:70px;
 
-border-radius:20px;
-
-font-size:28px;
-
-font-weight:700;
+padding:0;
 
 display:flex;
 
@@ -164,45 +372,68 @@ justify-content:center;
 
 align-items:center;
 
+font-size:32px;
+
+border-radius:20px;
+
 }
 
-/* ACCIONES */
-#cuerpo-tabla td:last-child{
+/* ELIMINAR */
+
+tbody td:last-child{
 
 display:flex;
 
 justify-content:center;
 
-border:none;
-
-padding-top:20px;
-
 }
 
-/* ELIMINAR */
 .btn-danger{
 
-padding:
+background:
 
-16px 28px;
+linear-gradient(
+135deg,
+#ff4444,
+#d90429
+);
 
-border-radius:18px;
+height:70px;
 
-font-size:20px;
+padding:0 34px;
+
+font-size:22px;
 
 }
 
 /* RESPONSIVE */
-@media(max-width:700px){
 
-#cuerpo-tabla{
+@media(max-width:900px){
+
+tbody{
 
 grid-template-columns:
+
 1fr;
 
 }
 
+.flex{
+
+flex-direction:column;
+
+align-items:stretch;
+
 }
+
+button{
+
+width:100%;
+
+}
+
+}
+  
 </style>
 
 </head>
@@ -702,7 +933,7 @@ actualizarSuave();
 
 setInterval(
 actualizarSuave,
-8000
+800
 );
 
 };
