@@ -547,9 +547,19 @@ v
 
 }
 
-async function cargarDatos(){
+async function cargarDatos(
+silencioso=false
+){
 
-mostrar(true);
+if(
+!silencioso
+){
+
+mostrar(
+true
+);
+
+}
 
 try{
 
@@ -564,21 +574,34 @@ const url=
 `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(hoja)}`;
 
 const r=
-await fetch(url);
+await fetch(
+url
+);
 
 const txt=
 await r.text();
 
 const data=
 JSON.parse(
+
 txt.slice(
-txt.indexOf("{"),
-txt.lastIndexOf("}")+1
+
+txt.indexOf(
+"{"
+),
+
+txt.lastIndexOf(
+"}"
+)+1
+
 )
+
 );
 
 const cuerpo=
-document.getElementById(
+
+document
+.getElementById(
 "cuerpo-tabla"
 );
 
@@ -586,7 +609,9 @@ cuerpo.innerHTML="";
 
 data.table.rows.forEach((f,i)=>{
 
-if(!f.c?.[0]?.v)
+if(
+!f.c?.[0]?.v
+)
 return;
 
 const nombre=
@@ -597,7 +622,9 @@ parseInt(
 f.c?.[1]?.v||0
 );
 
-if(cantidad<=0)
+if(
+cantidad<=0
+)
 return;
 
 const fila=
@@ -607,21 +634,34 @@ cuerpo.innerHTML+=`
 
 <tr>
 
-<td>${nombre}</td>
+<td>
+
+${nombre}
+
+</td>
 
 <td>
 
 <button
 class="btn-sm"
-onclick="
-modificarCantidad(
-'${hoja}',
-${fila},
-${cantidad-1}
-)
-">
 
--
+onclick="
+
+modificarCantidad(
+
+'${hoja}',
+
+${fila},
+
+${cantidad-1}
+
+)
+
+"
+
+>
+
+*
 
 </button>
 
@@ -633,15 +673,24 @@ ${cantidad}
 
 <button
 class="btn-sm"
-onclick="
-modificarCantidad(
-'${hoja}',
-${fila},
-${cantidad+1}
-)
-">
 
-+
+onclick="
+
+modificarCantidad(
+
+'${hoja}',
+
+${fila},
+
+${cantidad+1}
+
+)
+
+"
+
+>
+
+*
 
 </button>
 
@@ -650,13 +699,19 @@ ${cantidad+1}
 <td>
 
 <button
+
 class="btn-danger"
 
 onclick="
+
 eliminarComponente(
+
 '${hoja}',
+
 ${fila}
+
 )
+
 "
 
 >
@@ -677,17 +732,34 @@ Eliminar
 
 catch(e){
 
+console.log(
+e
+);
+
+if(
+!silencioso
+){
+
 alert(
 "Error cargando"
 );
 
-console.log(e);
+}
 
 }
 
-mostrar(false);
+if(
+!silencioso
+){
+
+mostrar(
+false
+);
 
 }
+
+}
+
 
 async function enviar(data){
 
