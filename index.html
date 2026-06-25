@@ -544,6 +544,146 @@ appearance:auto;
 justify-content:flex-end;
 
 }
+
+/* SIDEBAR */
+
+#sidebar{
+
+position:fixed;
+
+right:25px;
+
+top:50%;
+
+transform:
+translateY(-50%);
+
+display:flex;
+
+flex-direction:column;
+
+gap:16px;
+
+z-index:999;
+
+}
+
+.nav-btn{
+
+width:80px;
+
+height:80px;
+
+border-radius:24px;
+
+font-size:34px;
+
+}
+
+.nav-btn.activo{
+
+background:
+
+linear-gradient(
+135deg,
+#06b6d4,
+#2563eb
+);
+
+}
+
+/* EXCEL */
+
+#excel{
+
+margin-top:20px;
+
+height:80vh;
+
+}
+
+#excel-frame{
+
+width:100%;
+
+height:100%;
+
+border:none;
+
+border-radius:28px;
+
+background:white;
+
+}
+
+```
+
+Paso 5 — pega este JS antes de `window.onload`:
+
+:::writing{variant="standard" id="71284"}
+function mostrarVista(
+vista
+){
+
+document
+.getElementById(
+"inventario"
+)
+.style.display=
+
+vista==="inventario"
+
+?
+
+"block"
+
+:
+
+"none";
+
+document
+.getElementById(
+"excel"
+)
+.style.display=
+
+vista==="excel"
+
+?
+
+"block"
+
+:
+
+"none";
+
+document
+
+.querySelectorAll(
+".nav-btn"
+)
+
+.forEach(
+
+b=>
+
+b.classList
+.remove(
+"activo"
+)
+
+);
+
+event.target
+.classList
+.add(
+"activo"
+
+);
+
+}
+```
+
   
 </style>
 
@@ -551,7 +691,9 @@ justify-content:flex-end;
 
 <body>
 
-<div class="contenedor">
+<div class="contenedor"
+
+id="inventario"
 
 <h1>📦 Gestión de Inventario</h1>
 
@@ -645,6 +787,26 @@ Guardar
 
 </table>
 
+<div
+id="excel"
+
+style="display:none"
+
+>
+
+<iframe
+
+id="excel-frame"
+
+src="https://docs.google.com/spreadsheets/d/1jyNvKPuqlGR8YmFxxYZVj0P9vSW9AmtkNpL2epdHXTs/edit?usp=sharing"
+
+>
+
+</iframe>
+
+</div>
+
+  
 </div>
 
 <script>
@@ -1352,6 +1514,27 @@ actualizarSuave,
 
 </script>
 
+<div id="sidebar">
+
+<button
+class="nav-btn activo"
+onclick="mostrarVista('inventario')"
+
+>
+
+📦 </button>
+
+<button
+class="nav-btn"
+onclick="mostrarVista('excel')"
+
+>
+
+📊 </button>
+
+</div>
+
+  
 </body>
 
 </html>
