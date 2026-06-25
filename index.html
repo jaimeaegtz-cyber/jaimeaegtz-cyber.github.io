@@ -1013,14 +1013,22 @@ cargarDatos
 
 window.onload=()=>{
 
-actualizarSuave();
+cargarDatos();
 
 setInterval(
-actualizarSuave,
-800
+
+()=>{
+
+actualizarSuave();
+
+},
+
+8000
+
 );
 
 };
+
 
 </script>
 
