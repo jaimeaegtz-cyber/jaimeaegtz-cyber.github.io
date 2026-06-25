@@ -1,334 +1,116 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Sistema de Inventario Pro</title>
+<title>Inventario Pro</title>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
-
-font-family:
-Inter,
-Segoe UI,
-sans-serif;
-
-background:
-linear-gradient(
-160deg,
-#020617,
-#0f172a,
-#111827
-);
-
-color:white;
-
-min-height:100vh;
-
-padding:40px;
-
+font-family:'Segoe UI',sans-serif;
+background:#f1f5f9;
+margin:20px;
+color:#111827;
 }
 
 .contenedor{
-
-max-width:1200px;
-
+max-width:1000px;
 margin:auto;
-
+background:white;
+padding:25px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
 h1{
-
-font-size:3rem;
-
-margin-bottom:30px;
-
-font-weight:900;
-
-background:
-linear-gradient(
-90deg,
-#38bdf8,
-#22d3ee
-);
-
--webkit-background-clip:text;
-
-color:transparent;
-
+margin-top:0;
 }
 
 .seccion{
-
-background:
-rgba(255,255,255,.05);
-
-backdrop-filter:
-blur(20px);
-
-padding:25px;
-
-border-radius:28px;
-
-margin-bottom:25px;
-
-border:
-1px solid
-rgba(255,255,255,.08);
-
+background:#f8fafc;
+padding:15px;
+border-radius:12px;
+margin-bottom:20px;
 }
 
 .flex{
-
 display:flex;
-
-gap:15px;
-
+gap:12px;
 flex-wrap:wrap;
-
+align-items:end;
 }
 
 .control{
-
-flex:1;
-
 display:flex;
-
 flex-direction:column;
-
-gap:8px;
-
-}
-
-label{
-
-font-size:.8rem;
-
-text-transform:uppercase;
-
-opacity:.7;
-
+gap:6px;
 }
 
 input,
-select{
-
-padding:16px;
-
-background:
-rgba(255,255,255,.06);
-
-border:none;
-
-color:white;
-
-border-radius:18px;
-
-font-size:16px;
-
-}
-
-input:focus,
-select:focus{
-
-outline:none;
-
-box-shadow:
-0 0 0 3px
-#38bdf8;
-
+select,
+button{
+padding:10px;
+border-radius:10px;
+border:1px solid #cbd5e1;
 }
 
 button{
-
-padding:15px 22px;
-
-border:none;
-
-border-radius:18px;
-
-cursor:pointer;
-
-font-size:15px;
-
-font-weight:700;
-
-background:
-linear-gradient(
-135deg,
-#0ea5e9,
-#2563eb
-);
-
+background:#0284c7;
 color:white;
-
-transition:.2s;
-
+border:none;
+cursor:pointer;
 }
 
 button:hover{
+background:#0369a1;
+}
 
-transform:
-translateY(-5px);
-
-box-shadow:
-0 20px 50px
-rgba(14,165,233,.3);
-
+.btn-sm{
+padding:5px 10px;
 }
 
 .btn-danger{
+background:#ef4444;
+}
 
-background:
-linear-gradient(
-135deg,
-#ef4444,
-#b91c1c
-);
-
+.btn-danger:hover{
+background:#dc2626;
 }
 
 table{
-
-border-collapse:separate;
-
-border-spacing:0 15px;
-
+width:100%;
+border-collapse:collapse;
 }
 
-thead{
-
-display:none;
-
+th,td{
+padding:14px;
+border-bottom:1px solid #e2e8f0;
 }
 
-tbody{
-
-display:grid;
-
-grid-template-columns:
-repeat(
-auto-fill,
-minmax(
-300px,
-1fr
-)
-);
-
-gap:20px;
-
+th{
+background:#0f172a;
+color:white;
 }
 
-tr{
-
-display:block;
-
-background:
-rgba(255,255,255,.05);
-
-padding:25px;
-
-border-radius:28px;
-
-backdrop-filter:
-blur(20px);
-
-transition:.25s;
-
-border:
-1px solid
-rgba(255,255,255,.08);
-
-}
-
-tr:hover{
-
-transform:
-translateY(-8px);
-
-}
-
-td{
-
-display:block;
-
-border:none;
-
-padding:10px 0;
-
-}
-
-td:first-child{
-
-font-size:1.3rem;
-
-font-weight:800;
-
-color:#67e8f9;
-
-}
-
-td:nth-child(2){
-
-font-size:2rem;
-
+td strong{
+display:inline-block;
+min-width:40px;
 text-align:center;
-
-}
-
-strong{
-
-background:
-#0284c7;
-
-padding:8px 18px;
-
-border-radius:999px;
-
 }
 
 #loading{
-
-background:
-#082f49;
-
-padding:18px;
-
-border-radius:18px;
-
-margin-bottom:20px;
-
+display:none;
+padding:12px;
+background:#dbeafe;
+border-radius:10px;
+margin-bottom:15px;
 }
 
-@media(max-width:700px){
-
-body{
-padding:20px;
-}
-
-h1{
-font-size:2rem;
-}
-
-tbody{
-
-grid-template-columns:
-1fr;
-
-}
-
-}
-  
 </style>
 
 </head>
@@ -372,17 +154,23 @@ Sincronizando...
 <div class="flex">
 
 <div class="control">
+
 <label>Nombre</label>
+
 <input id="nuevo-nombre">
+
 </div>
 
 <div class="control">
+
 <label>Cantidad</label>
+
 <input
 id="nueva-cantidad"
 type="number"
 value="1"
 min="1">
+
 </div>
 
 <button onclick="agregarComponente()">
@@ -407,9 +195,7 @@ Guardar
 
 </thead>
 
-<tbody id="cuerpo-tabla">
-
-</tbody>
+<tbody id="cuerpo-tabla"></tbody>
 
 </table>
 
@@ -417,92 +203,81 @@ Guardar
 
 <script>
 
-const SHEET_ID =
+const SHEET_ID=
 "1jyNvKPuqlGR8YmFxxYZVj0P9vSW9AmtkNpL2epdHXTs";
 
-const SCRIPT_URL =
+const SCRIPT_URL=
 "https://script.google.com/macros/s/AKfycbzbmlIbhKCqOO7HvZKyNzsTGdSBCLwiMO8YuHJ03wnMPZn6EpVseZAUw996Yc2m8vQSkg/exec";
+
+function mostrar(v){
+
+document
+.getElementById(
+"loading"
+)
+.style.display=
+v
+?
+"block"
+:
+"none";
+
+}
 
 async function cargarDatos(){
 
-if(
-document
-.getElementById(
-"cuerpo-tabla"
-)
-.innerHTML === ""
-){
 mostrar(true);
-}
 
 try{
 
-const hoja =
+const hoja=
 document
 .getElementById(
 "selector-pestaña"
 )
 .value;
 
-const url =
+const url=
 `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(hoja)}`;
 
-const r =
+const r=
 await fetch(url);
 
-const txt =
+const txt=
 await r.text();
 
-const inicio =
-txt.indexOf("{");
-
-const fin =
-txt.lastIndexOf("}");
-
-if(
-inicio===-1||
-fin===-1
-){
-throw Error(
-"Sheet privado o pestaña inexistente"
-);
-}
-
-const data =
+const data=
 JSON.parse(
 txt.slice(
-inicio,
-fin+1
+txt.indexOf("{"),
+txt.lastIndexOf("}")+1
 )
 );
 
-const filas =
-data.table.rows;
-
-const cuerpo =
+const cuerpo=
 document.getElementById(
 "cuerpo-tabla"
 );
 
 cuerpo.innerHTML="";
 
-filas.forEach((f,i)=>{
+data.table.rows.forEach((f,i)=>{
 
-if(
-!f.c?.[0]?.v
-)
+if(!f.c?.[0]?.v)
 return;
 
-const nombre =
+const nombre=
 f.c[0].v;
 
-const cantidad =
-f.c[1]?.v||0;
+const cantidad=
+parseInt(
+f.c?.[1]?.v||0
+);
 
 if(cantidad<=0)
 return;
 
-const fila =
+const fila=
 i+2;
 
 cuerpo.innerHTML+=`
@@ -515,7 +290,6 @@ cuerpo.innerHTML+=`
 
 <button
 class="btn-sm"
-
 onclick="
 modificarCantidad(
 '${hoja}',
@@ -536,7 +310,6 @@ ${cantidad}
 
 <button
 class="btn-sm"
-
 onclick="
 modificarCantidad(
 '${hoja}',
@@ -554,7 +327,6 @@ ${cantidad+1}
 <td>
 
 <button
-
 class="btn-danger"
 
 onclick="
@@ -579,14 +351,14 @@ Eliminar
 });
 
 }
+
 catch(e){
 
-console.log(e);
-
 alert(
-"Error cargando datos\n\n"+
-e.message
+"Error cargando"
 );
+
+console.log(e);
 
 }
 
@@ -594,9 +366,33 @@ mostrar(false);
 
 }
 
+async function enviar(data){
+
+await fetch(
+SCRIPT_URL,
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:
+JSON.stringify(
+data
+)
+
+}
+
+);
+
+}
+
 async function agregarComponente(){
 
-const nombre =
+const nombre=
 document
 .getElementById(
 "nuevo-nombre"
@@ -607,27 +403,92 @@ document
 if(!nombre)
 return;
 
-const cantidad =
+const cantidad=
+parseInt(
 document
 .getElementById(
 "nueva-cantidad"
 )
-.value;
+.value
+);
 
-const hoja =
+const hoja=
 document
 .getElementById(
 "selector-pestaña"
 )
 .value;
 
-await fetch(
-SCRIPT_URL,
-{
-method:"POST",
+const url=
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(hoja)}`;
 
-body:
-JSON.stringify({
+const r=
+await fetch(url);
+
+const txt=
+await r.text();
+
+const data=
+JSON.parse(
+txt.slice(
+txt.indexOf("{"),
+txt.lastIndexOf("}")+1
+)
+);
+
+let encontrado=
+false;
+
+for(
+let i=0;
+i<data.table.rows.length;
+i++
+){
+
+const fila=
+data.table.rows[i];
+
+const nombreActual=
+fila?.c?.[0]?.v
+?.toString()
+.toLowerCase();
+
+const cantidadActual=
+parseInt(
+fila?.c?.[1]?.v||0
+);
+
+if(
+nombreActual===
+nombre.toLowerCase()
+){
+
+await enviar({
+
+action:"update",
+
+sheetName:hoja,
+
+fila:i+2,
+
+cantidad:
+cantidadActual
++
+cantidad
+
+});
+
+encontrado=true;
+
+break;
+
+}
+
+}
+
+if(!encontrado){
+
+await enviar({
 
 action:"add",
 
@@ -637,11 +498,23 @@ componente:nombre,
 
 cantidad
 
-})
-}
-);
+});
 
-cargarDatos();
+}
+
+document
+.getElementById(
+"nuevo-nombre"
+)
+.value="";
+
+document
+.getElementById(
+"nueva-cantidad"
+)
+.value=1;
+
+await cargarDatos();
 
 }
 
@@ -654,13 +527,7 @@ cantidad
 if(cantidad<0)
 return;
 
-await fetch(
-SCRIPT_URL,
-{
-method:"POST",
-
-body:
-JSON.stringify({
+await enviar({
 
 action:"update",
 
@@ -670,11 +537,9 @@ fila,
 
 cantidad
 
-})
-}
-);
+});
 
-cargarDatos();
+await cargarDatos();
 
 }
 
@@ -683,13 +548,14 @@ hoja,
 fila
 ){
 
-await fetch(
-SCRIPT_URL,
-{
-method:"POST",
+if(
+!confirm(
+"¿Eliminar?"
+)
+)
+return;
 
-body:
-JSON.stringify({
+await enviar({
 
 action:"delete",
 
@@ -697,26 +563,35 @@ sheetName:hoja,
 
 fila
 
-})
-}
-);
+});
 
-cargarDatos();
+await cargarDatos();
 
 }
 
-function mostrar(v){
+let actualizando=
+false;
 
-document
-.getElementById(
-"loading"
-)
-.style.display =
-v
-?
-"block"
-:
-"none";
+async function actualizarSuave(){
+
+if(actualizando)
+return;
+
+actualizando=
+true;
+
+try{
+
+await cargarDatos();
+
+}
+
+finally{
+
+actualizando=
+false;
+
+}
 
 }
 
@@ -729,35 +604,13 @@ document
 cargarDatos
 );
 
-let actualizando = false;
-
-async function actualizarSuave(){
-
-if(actualizando)
-return;
-
-actualizando = true;
-
-try{
-
-await cargarDatos();
-
-}
-finally{
-
-actualizando = false;
-
-}
-
-}
-
-window.onload = ()=>{
+window.onload=()=>{
 
 actualizarSuave();
 
 setInterval(
 actualizarSuave,
-500
+8000
 );
 
 };
