@@ -454,17 +454,29 @@ Sincronizando...
 
 <label>Ubicación</label>
 
+<div style="display:flex;gap:10px;flex-wrap:wrap;">
+
 <select id="selector-pestaña">
-
-<option>CAJA 1</option>
-<option>CAJA 2</option>
-<option>CAJA 3</option>
-<option>CAJA 4</option>
-<option>Bolsa 5</option>
-<option>Caja 6</option>
-<option>Caja Roja</option>
-
 </select>
+
+<button onclick="crearCaja()">
+＋
+</button>
+
+<button onclick="editarCaja()">
+✏️
+</button>
+
+<button
+class="btn-danger"
+onclick="eliminarCaja()"
+
+>
+
+🗑 </button>
+
+</div>
+
 
 </div>
 
@@ -1011,23 +1023,220 @@ document
 cargarDatos
 );
 
+const CAJAS_KEY=
+"mis_cajas";
+
+function obtenerCajas(){
+
+const guardadas=
+
+JSON.parse(
+
+localStorage.getItem(
+CAJAS_KEY
+)
+
+);
+
+return guardadas||
+
+[
+
+"CAJA 1",
+
+"CAJA 2",
+
+"CAJA 3",
+
+"CAJA 4",
+
+"Bolsa 5",
+
+"Caja 6",
+
+"Caja Roja"
+
+];
+
+}
+
+function guardarCajas(
+lista
+){
+
+localStorage.setItem(
+
+CAJAS_KEY,
+
+JSON.stringify(
+lista
+)
+
+);
+
+}
+
+function renderCajas(){
+
+const selector=
+
+document
+.getElementById(
+"selector-pestaña"
+);
+
+selector.innerHTML="";
+
+obtenerCajas()
+
+.forEach(
+
+c=>{
+
+selector.innerHTML+=`
+
+<option>
+
+${c}
+
+</option>
+
+`;
+
+}
+
+);
+
+}
+
+function crearCaja(){
+
+const nombre=
+
+prompt(
+"Nombre:"
+);
+
+if(
+!nombre
+)
+return;
+
+const cajas=
+obtenerCajas();
+
+cajas.push(
+nombre
+);
+
+guardarCajas(
+cajas
+);
+
+renderCajas();
+
+}
+
+function editarCaja(){
+
+const selector=
+
+document
+.getElementById(
+"selector-pestaña"
+);
+
+const actual=
+selector.value;
+
+const nuevo=
+
+prompt(
+"Nuevo nombre",
+actual
+);
+
+if(
+!nuevo
+)
+return;
+
+const cajas=
+obtenerCajas();
+
+const i=
+cajas.indexOf(
+actual
+);
+
+if(
+i!==-1
+){
+
+cajas[i]=
+nuevo;
+
+guardarCajas(
+cajas
+);
+
+renderCajas();
+
+}
+
+}
+
+function eliminarCaja(){
+
+const selector=
+
+document
+.getElementById(
+"selector-pestaña"
+);
+
+if(
+!confirm(
+"Eliminar caja?"
+)
+)
+return;
+
+guardarCajas(
+
+obtenerCajas()
+
+.filter(
+
+x=>
+
+x!==selector.value
+
+)
+
+);
+
+renderCajas();
+
+}
+
+  
 window.onload=()=>{
+
+renderCajas();
 
 cargarDatos();
 
 setInterval(
 
-()=>{
-
-actualizarSuave();
-
-},
+actualizarSuave,
 
 8000
 
 );
 
 };
+
 
 
 </script>
