@@ -9,24 +9,25 @@
 <title>Sistema de Inventario Pro</title>
 
 <style>
-
 body{
 font-family:'Segoe UI',sans-serif;
-background:
-linear-gradient(
-135deg,
-#e0f2fe,
-#f8fafc
-);
-
 margin:0;
 padding:30px;
 
-color:#0f172a;
+background:
+linear-gradient(
+135deg,
+#dbeafe,
+#f8fafc,
+#ffffff
+);
+
+min-height:100vh;
 }
 
 .contenedor{
-max-width:1100px;
+
+max-width:1200px;
 
 margin:auto;
 
@@ -34,60 +35,42 @@ background:
 rgba(255,255,255,.75);
 
 backdrop-filter:
-blur(18px);
+blur(20px);
 
 padding:30px;
 
-border-radius:24px;
+border-radius:30px;
 
 box-shadow:
-0 20px 60px
+0 25px 60px
 rgba(0,0,0,.08);
 
-border:
-1px solid
-rgba(255,255,255,.4);
-
-animation:
-entrar .4s ease;
-}
-
-@keyframes entrar{
-from{
-opacity:0;
-transform:
-translateY(15px);
-}
-to{
-opacity:1;
-transform:none;
-}
 }
 
 h1{
+
 margin-top:0;
 
-font-size:2rem;
+font-size:2.3rem;
 
-display:flex;
-align-items:center;
+font-weight:800;
 
-gap:10px;
+color:#0f172a;
+
 }
 
 .seccion{
 
-background:
-white;
+background:white;
 
-padding:20px;
+padding:22px;
 
-border-radius:18px;
+border-radius:22px;
 
-margin-bottom:20px;
+margin-bottom:25px;
 
 box-shadow:
-0 8px 30px
+0 10px 30px
 rgba(0,0,0,.05);
 
 }
@@ -106,13 +89,13 @@ align-items:end;
 
 .control{
 
-flex:1;
-
 display:flex;
 
 flex-direction:column;
 
 gap:8px;
+
+flex:1;
 
 }
 
@@ -120,9 +103,9 @@ label{
 
 font-size:.9rem;
 
-font-weight:600;
+font-weight:700;
 
-color:#334155;
+color:#475569;
 
 }
 
@@ -131,15 +114,17 @@ select{
 
 padding:14px;
 
-border-radius:14px;
+border-radius:16px;
 
-border:2px solid #e2e8f0;
+border:2px solid #dbeafe;
 
 font-size:15px;
 
-transition:.2s;
+transition:.25s;
 
 outline:none;
+
+background:white;
 
 }
 
@@ -149,7 +134,7 @@ select:focus{
 border-color:#0ea5e9;
 
 box-shadow:
-0 0 0 5px
+0 0 0 6px
 rgba(14,165,233,.15);
 
 }
@@ -160,13 +145,7 @@ padding:14px 18px;
 
 border:none;
 
-border-radius:14px;
-
-font-weight:700;
-
-cursor:pointer;
-
-transition:.2s;
+border-radius:999px;
 
 background:
 linear-gradient(
@@ -177,15 +156,21 @@ linear-gradient(
 
 color:white;
 
+font-weight:700;
+
+cursor:pointer;
+
+transition:.2s;
+
 }
 
 button:hover{
 
 transform:
-translateY(-2px);
+translateY(-3px);
 
 box-shadow:
-0 10px 20px
+0 12px 25px
 rgba(2,132,199,.3);
 
 }
@@ -199,9 +184,13 @@ scale(.96);
 
 .btn-sm{
 
-padding:8px 12px;
+width:42px;
 
-min-width:40px;
+height:42px;
+
+padding:0;
+
+font-size:20px;
 
 }
 
@@ -216,70 +205,106 @@ linear-gradient(
 
 }
 
-table{
+.btn-danger:hover{
 
-width:100%;
-
-border-collapse:separate;
-
-border-spacing:0 10px;
+box-shadow:
+0 12px 25px
+rgba(239,68,68,.3);
 
 }
 
-th{
+.grid{
 
-background:#0f172a;
+display:grid;
 
-padding:16px;
+grid-template-columns:
+repeat(
+auto-fill,
+minmax(
+300px,
+1fr
+)
+);
 
-}
-
-th:first-child{
-border-radius:12px 0 0 12px;
-}
-
-th:last-child{
-border-radius:0 12px 12px 0;
-}
-
-td{
-
-padding:18px;
-
-background:white;
+gap:20px;
 
 }
 
-tr td:first-child{
+.card{
 
-border-radius:14px 0 0 14px;
+background:
+linear-gradient(
+145deg,
+white,
+#f8fafc
+);
+
+padding:24px;
+
+border-radius:26px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+box-shadow:
+0 12px 35px
+rgba(0,0,0,.08);
+
+transition:.25s;
 
 }
 
-tr td:last-child{
-
-border-radius:0 14px 14px 0;
-
-}
-
-tbody tr{
-
-transition:.2s;
-
-}
-
-tbody tr:hover{
+.card:hover{
 
 transform:
-scale(1.01);
+translateY(-6px);
 
 }
 
-strong{
+.titulo{
 
-font-size:1.2rem;
+font-size:1.25rem;
 
-margin:0 10px;
+font-weight:800;
+
+color:#0f172a;
+
+word-break:break-word;
+
+}
+
+.cantidad{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:16px;
+
+}
+
+.cantidad span{
+
+font-size:2.2rem;
+
+font-weight:900;
+
+color:#0284c7;
+
+background:#e0f2fe;
+
+padding:10px 22px;
+
+border-radius:999px;
+
+min-width:60px;
+
+text-align:center;
 
 }
 
@@ -287,15 +312,13 @@ margin:0 10px;
 
 display:none;
 
-padding:16px;
-
-margin-bottom:20px;
+padding:18px;
 
 background:
 linear-gradient(
 90deg,
 #dbeafe,
-#eff6ff
+#f0f9ff
 );
 
 border-radius:18px;
@@ -303,16 +326,20 @@ border-radius:18px;
 font-weight:700;
 
 animation:
-parpadeo 1s infinite;
+loading 1s infinite;
 
 }
 
-@keyframes parpadeo{
+@keyframes loading{
 
 50%{
-opacity:.6;
+opacity:.55;
 }
 
+}
+
+table{
+display:none;
 }
 
 @media(max-width:700px){
@@ -321,22 +348,28 @@ body{
 padding:15px;
 }
 
+.contenedor{
+padding:20px;
+}
+
 .flex{
-
 flex-direction:column;
+}
+
+.grid{
+
+grid-template-columns:
+1fr;
 
 }
 
-table{
+h1{
 
-display:block;
-
-overflow-x:auto;
+font-size:1.8rem;
 
 }
 
 }
-
 </style>
 
 </head>
