@@ -970,26 +970,37 @@ false;
 
 async function actualizarSuave(){
 
-if(actualizando)
+if(
+actualizando
+)
 return;
 
-actualizando=
-true;
+actualizando=true;
 
 try{
 
-await cargarDatos();
+await cargarDatos(
+true
+);
+
+}
+
+catch(e){
+
+console.log(
+e
+);
 
 }
 
 finally{
 
-actualizando=
-false;
+actualizando=false;
 
 }
 
 }
+
 
 document
 .getElementById(
