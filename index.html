@@ -674,11 +674,13 @@ b.classList
 
 );
 
-event.target
+document
+.querySelector(
+`button[onclick="mostrarVista('${vista}')"]`
+)
 .classList
 .add(
 "activo"
-
 );
 
 }
