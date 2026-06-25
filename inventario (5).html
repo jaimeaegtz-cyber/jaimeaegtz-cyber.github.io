@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inventario</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #060c1a;
+    --card: #111c32;
+    --card2: #162038;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --cyan: #22d3ee;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --muted2: #64748b;
+    --danger: #ef4444;
+    --green: #22c55e;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --sidebar-w: 72px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 0; gap: 8px; z-index: 100;
+  }
+  .sidebar-logo { font-size: 26px; margin-bottom: 16px; }
+  .nav-btn {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent; color: var(--muted);
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--card2); color: var(--text); border-color: var(--border-hover); }
+  .nav-btn.activo { background: rgba(59,130,246,0.15); color: var(--accent2); border-color: rgba(59,130,246,0.3); }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); min-height: 100vh; padding: 32px 28px; max-width: 1400px; }
+
+  /* HEADER */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--cyan); }
+  .sync-badge {
+    display: none; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 999px; font-size: 13px; color: var(--cyan);
+  }
+  .sync-badge.visible { display: flex; }
+  .dot { width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* PANELS */
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+  .panel-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted2); margin-bottom: 16px; }
+
+  /* LOCATION */
+  .location-row { display: flex; gap: 10px; align-items: center; }
+  .location-row select {
+    flex: 1; height: 52px; padding: 0 44px 0 18px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-size: 16px; font-weight: 500; outline: none; cursor: pointer;
+    transition: border-color 0.2s; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .location-row select:hover, .location-row select:focus { border-color: var(--border-hover); }
+  .icon-btn {
+    width: 52px; height: 52px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--card2);
+    color: var(--muted); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.06); }
+  .icon-btn.danger:hover { border-color: rgba(239,68,68,0.4); color: var(--danger); background: rgba(239,68,68,0.08); }
+
+  /* ADD */
+  .add-row { display: flex; gap: 12px; align-items: flex-end; }
+  .field { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .field label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted2); }
+  .field input {
+    height: 52px; padding: 0 18px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-size: 16px; outline: none; transition: all 0.2s;
+  }
+  .field input:hover, .field input:focus { border-color: var(--border-hover); }
+  .field input:focus { border-color: rgba(59,130,246,0.5); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+  .field.qty { flex: 0 0 140px; }
+  .field input[type=number] { text-align: center; font-size: 18px; font-weight: 600; }
+  .btn-primary {
+    height: 52px; padding: 0 28px;
+    background: var(--accent); border: none; border-radius: var(--radius-sm);
+    color: white; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* STATS */
+  .stats-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted2); }
+  .stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+  .stat-value.cyan { color: var(--cyan); }
+  .stat-value.green { color: var(--green); }
+
+  /* GRID */
+  #cuerpo-tabla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* COMPONENT CARD */
+  .comp-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px;
+    display: flex; flex-direction: column; gap: 18px;
+    transition: border-color 0.2s, transform 0.2s, opacity 0.2s;
+  }
+  .comp-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+  /* Pending: newly added, waiting for server to confirm row */
+  .comp-card.pending { opacity: 0.6; pointer-events: none; }
+  .comp-card.pending .comp-name::after {
+    content: " …";
+    color: var(--muted2);
+    font-size: 13px;
+  }
+
+  /* Flash when quantity changes */
+  .comp-card.flash { border-color: rgba(34,211,238,0.5); }
+
+  .comp-name {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .comp-controls { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .qty-btn {
+    width: 44px; height: 44px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card2);
+    color: var(--muted); font-size: 22px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; line-height: 1; user-select: none;
+  }
+  .qty-btn:hover { border-color: var(--accent); color: var(--accent2); background: rgba(59,130,246,0.1); }
+  .qty-btn:active { transform: scale(0.9); }
+  .qty-display {
+    min-width: 72px; height: 52px;
+    background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.15);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 800; color: var(--cyan);
+    transition: transform 0.15s;
+  }
+  .qty-display.bump { transform: scale(1.18); }
+  .comp-footer { display: flex; justify-content: flex-end; }
+  .btn-delete {
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05);
+    color: var(--danger); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-delete:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+
+  /* EMPTY */
+  .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--muted2); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  /* EXCEL */
+  #vista-excel { display: none; }
+  #excel-frame { width: 100%; height: calc(100vh - 120px); border: 1px solid var(--border); border-radius: var(--radius); background: white; }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    :root { --sidebar-w: 0px; }
+    #sidebar { bottom: 0; top: auto; left: 0; right: 0; width: 100%; height: 60px; flex-direction: row; justify-content: center; border-right: none; border-top: 1px solid var(--border); padding: 0; }
+    .sidebar-logo { display: none; }
+    #main { margin-left: 0; padding: 20px 16px 80px; }
+    .add-row { flex-wrap: wrap; }
+    .field.qty { flex: 0 0 100%; }
+    .btn-primary { width: 100%; }
+    .stats-bar { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sidebar-logo">📦</div>
+  <button class="nav-btn activo" onclick="mostrarVista('inventario')" title="Inventario">📦</button>
+  <button class="nav-btn" onclick="mostrarVista('excel')" title="Hoja de cálculo">📊</button>
+</div>
+
+<div id="main">
+
+  <div id="vista-inventario">
+    <div class="header">
+      <h1>Gestión de <span>Inventario</span></h1>
+      <div id="loading" class="sync-badge"><div class="dot"></div>Sincronizando...</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Ubicación</div>
+      <div class="location-row">
+        <select id="selector-pestaña"></select>
+        <button class="icon-btn" onclick="crearCaja()" title="Nueva ubicación">＋</button>
+        <button class="icon-btn" onclick="editarCaja()" title="Renombrar">✏️</button>
+        <button class="icon-btn danger" onclick="eliminarCaja()" title="Eliminar">🗑</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Agregar componente</div>
+      <div class="add-row">
+        <div class="field">
+          <label>Nombre</label>
+          <input id="nuevo-nombre" placeholder="Ej: Resistencia 10kΩ">
+        </div>
+        <div class="field qty">
+          <label>Cantidad</label>
+          <input id="nueva-cantidad" type="number" value="1" min="1">
+        </div>
+        <button class="btn-primary" onclick="agregarComponente()">Guardar</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Componentes</div>
+        <div class="stat-value cyan" id="stat-count">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unidades totales</div>
+        <div class="stat-value green" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ubicación activa</div>
+        <div class="stat-value" id="stat-box" style="font-size:16px;padding-top:6px">—</div>
+      </div>
+    </div>
+
+    <div id="cuerpo-tabla">
+      <div class="empty-state"><div class="empty-icon">📭</div><p>Cargando...</p></div>
+    </div>
+  </div>
+
+  <div id="vista-excel">
+    <div class="header"><h1>Hoja de <span>cálculo</span></h1></div>
+    <iframe id="excel-frame" src="https://docs.google.com/spreadsheets/d/1jyNvKPuqlGR8YmFxxYZVj0P9vSW9AmtkNpL2epdHXTs/edit?usp=sharing"></iframe>
+  </div>
+
+</div>
+
+<script>
+const SHEET_ID   = "1jyNvKPuqlGR8YmFxxYZVj0P9vSW9AmtkNpL2epdHXTs";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw2xh4tt1SCx0rghlJSHVC7Uu8HLBHmgCu6PrFFBpLF5ueteIg4UP0Rs3M-zVC_i1mjmg/exec";
+const CAJAS_KEY  = "mis_cajas";
+
+// ──────────────────────────────────────────────────
+// ESTADO LOCAL — única fuente de verdad para la UI
+// ──────────────────────────────────────────────────
+let estado = {
+  hoja: '',
+  items: []   // [{ nombre, cantidad, fila, pending? }]
+};
+
+// ──────────────────────────────────────────────────
+// RENDER — dibuja la cuadrícula desde el estado local
+// No hace ninguna petición de red; es instantáneo.
+// ──────────────────────────────────────────────────
+function render() {
+  const cuerpo = document.getElementById("cuerpo-tabla");
+
+  if (estado.items.length === 0) {
+    cuerpo.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>No hay componentes en esta ubicación.</p>
+      </div>`;
+    setStats(0, 0);
+    return;
+  }
+
+  cuerpo.innerHTML = "";
+  let count = 0, total = 0;
+
+  estado.items.forEach(item => {
+    count++;
+    total += item.cantidad;
+
+    const card = document.createElement("div");
+    card.className = "comp-card" + (item.pending ? " pending" : "");
+    card.dataset.fila = item.fila;
+
+    // Nombre — textContent evita inyección HTML
+    const nameEl = document.createElement("div");
+    nameEl.className = "comp-name";
+    nameEl.title = item.nombre;
+    nameEl.textContent = item.nombre;
+
+    // Controles de cantidad
+    const controls = document.createElement("div");
+    controls.className = "comp-controls";
+    controls.innerHTML = `
+      <button class="qty-btn" data-action="minus">−</button>
+      <div class="qty-display">${item.cantidad}</div>
+      <button class="qty-btn" data-action="plus">+</button>
+    `;
+
+    // Pie con botón eliminar
+    const footer = document.createElement("div");
+    footer.className = "comp-footer";
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn-delete";
+    delBtn.dataset.action = "delete";
+    delBtn.innerHTML = "🗑 Eliminar";
+    footer.appendChild(delBtn);
+
+    card.appendChild(nameEl);
+    card.appendChild(controls);
+    card.appendChild(footer);
+    cuerpo.appendChild(card);
+  });
+
+  setStats(count, total);
+}
+
+function setStats(count, total) {
+  document.getElementById("stat-count").textContent = count;
+  document.getElementById("stat-total").textContent = total;
+  document.getElementById("stat-box").textContent = estado.hoja;
+}
+
+// ──────────────────────────────────────────────────
+// EVENT DELEGATION — un solo listener para todo el grid
+// ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("cuerpo-tabla").addEventListener("click", e => {
+    const btn  = e.target.closest("[data-action]");
+    if (!btn) return;
+    const card = btn.closest(".comp-card");
+    if (!card) return;
+    const fila   = card.dataset.fila;          // string o "temp_…"
+    const action = btn.dataset.action;
+
+    if (action === "minus")  cambiarCantidad(fila, -1);
+    if (action === "plus")   cambiarCantidad(fila, +1);
+    if (action === "delete") eliminarComponente(fila);
+  });
+});
+
+// ──────────────────────────────────────────────────
+// ACCIONES — actualizan estado local PRIMERO (instantáneo)
+//            y luego envían a Sheets en segundo plano
+// ──────────────────────────────────────────────────
+
+// Cambia cantidad con feedback visual inmediato
+function cambiarCantidad(fila, delta) {
+  const item = estado.items.find(i => String(i.fila) === String(fila));
+  if (!item) return;
+  const nueva = item.cantidad + delta;
+  if (nueva < 0) return;
+
+  item.cantidad = nueva;
+  render();
+
+  // Animación "bump" en el número
+  const card = document.querySelector(`.comp-card[data-fila="${fila}"]`);
+  if (card) {
+    const display = card.querySelector(".qty-display");
+    display.classList.add("bump");
+    setTimeout(() => display.classList.remove("bump"), 200);
+  }
+
+  // Guardar en background — sin bloquear la UI
+  enviar({ action: "update", sheetName: estado.hoja, fila: parseInt(fila), cantidad: nueva });
+}
+
+// Agrega componente: optimista si ya existe, con indicador si es nuevo
+async function agregarComponente() {
+  const nombreInput = document.getElementById("nuevo-nombre");
+  const nombre = nombreInput.value.trim();
+  if (!nombre) { nombreInput.focus(); return; }
+  const cantidad = Math.max(1, parseInt(document.getElementById("nueva-cantidad").value) || 1);
+
+  // Limpiar inputs de inmediato para que el usuario pueda seguir escribiendo
+  nombreInput.value = "";
+  document.getElementById("nueva-cantidad").value = 1;
+  nombreInput.focus();
+
+  const existing = estado.items.find(i => i.nombre.toLowerCase() === nombre.toLowerCase());
+
+  if (existing) {
+    // ✅ Componente existente — actualización completamente optimista
+    existing.cantidad += cantidad;
+    render();
+    enviar({ action: "update", sheetName: estado.hoja, fila: existing.fila, cantidad: existing.cantidad });
+
+  } else {
+    // 🆕 Componente nuevo — aparece al instante como "pending" mientras se guarda
+    const tempFila = "temp_" + Date.now();
+    estado.items.push({ nombre, cantidad, fila: tempFila, pending: true });
+    render();
+
+    // Esperar el guardado y luego refrescar para obtener el número de fila real
+    const resp = await enviar({ action: "add", sheetName: estado.hoja, componente: nombre, cantidad });
+
+    if (!resp || resp.status !== "success") {
+      // El guardado falló: quitar el item pendiente para que no se quede
+      // colgado en pantalla, y avisar con el motivo real.
+      estado.items = estado.items.filter(i => i.fila !== tempFila);
+      render();
+      alert("No se pudo guardar el componente.\n\nMotivo: " + (resp?.message || "sin respuesta del servidor (revisa el despliegue del Apps Script)"));
+      return;
+    }
+
+    await cargarDatos(true);
+  }
+}
+
+// Elimina al instante, borra en background
+async function eliminarComponente(fila) {
+  if (!confirm("¿Eliminar este componente?")) return;
+
+  // Quitar de la UI de inmediato
+  estado.items = estado.items.filter(i => String(i.fila) !== String(fila));
+  render();
+
+  // Borrar en Sheets en segundo plano
+  enviar({ action: "delete", sheetName: estado.hoja, fila: parseInt(fila) });
+}
+
+// ──────────────────────────────────────────────────
+// RED
+// ──────────────────────────────────────────────────
+async function enviar(data) {
+  // Mantenemos Content-Type:text/plain para evitar el preflight CORS
+  // (con application/json el navegador manda antes un OPTIONS que
+  // Apps Script no resuelve correctamente). Pero YA NO usamos mode:"no-cors":
+  // así sí podemos leer la respuesta real del Apps Script (éxito o error)
+  // en vez de operar a ciegas.
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    if (json.status !== "success") {
+      console.error("El servidor respondió con error:", json.message);
+    }
+    return json;
+  } catch(e) {
+    console.error("Error guardando (red o CORS):", e);
+    return { status: "error", message: e.toString() };
+  }
+}
+
+let cargando = false;
+
+async function cargarDatos(silencioso = false) {
+  if (cargando) return;
+  cargando = true;
+  if (!silencioso) mostrarSync(true);
+
+  try {
+    const hoja = document.getElementById("selector-pestaña").value;
+    estado.hoja = hoja;
+
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(hoja)}`;
+    const r = await fetch(url);
+    const txt = await r.text();
+    const data = JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1));
+
+    estado.items = [];
+    data.table.rows.forEach((f, i) => {
+      if (!f.c?.[0]?.v) return;
+      const nombre   = f.c[0].v;
+      const cantidad = parseInt(f.c?.[1]?.v || 0);
+      if (cantidad <= 0) return;
+      estado.items.push({ nombre, cantidad, fila: i + 2 });
+    });
+
+    render();
+  } catch(e) {
+    console.error(e);
+    if (!silencioso) {
+      document.getElementById("cuerpo-tabla").innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <p>Error cargando datos. Revisa tu conexión.</p>
+        </div>`;
+    }
+  }
+
+  if (!silencioso) mostrarSync(false);
+  cargando = false;
+}
+
+function mostrarSync(v) {
+  document.getElementById("loading").classList.toggle("visible", v);
+}
+
+// ──────────────────────────────────────────────────
+// VISTAS
+// ──────────────────────────────────────────────────
+function mostrarVista(vista) {
+  document.getElementById("vista-inventario").style.display = vista === "inventario" ? "block" : "none";
+  document.getElementById("vista-excel").style.display     = vista === "excel"       ? "block" : "none";
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("activo"));
+  document.querySelector(`button[onclick="mostrarVista('${vista}')"]`).classList.add("activo");
+}
+
+// ──────────────────────────────────────────────────
+// CAJAS (localStorage)
+// ──────────────────────────────────────────────────
+function obtenerCajas() {
+  return JSON.parse(localStorage.getItem(CAJAS_KEY)) ||
+    ["CAJA 1","CAJA 2","CAJA 3","CAJA 4","Bolsa 5","Caja 6","Caja Roja"];
+}
+function guardarCajas(lista) { localStorage.setItem(CAJAS_KEY, JSON.stringify(lista)); }
+
+function renderCajas() {
+  const sel = document.getElementById("selector-pestaña");
+  const actual = sel.value;
+  sel.innerHTML = "";
+  obtenerCajas().forEach(c => {
+    const opt = document.createElement("option");
+    opt.textContent = c; opt.value = c;
+    if (c === actual) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function crearCaja() {
+  const nombre = prompt("Nombre de la nueva ubicación:");
+  if (!nombre) return;
+  const cajas = obtenerCajas(); cajas.push(nombre);
+  guardarCajas(cajas); renderCajas();
+  document.getElementById("selector-pestaña").value = nombre;
+  cargarDatos();
+}
+function editarCaja() {
+  const sel = document.getElementById("selector-pestaña");
+  const nuevo = prompt("Nuevo nombre:", sel.value);
+  if (!nuevo || nuevo === sel.value) return;
+  const cajas = obtenerCajas(); const i = cajas.indexOf(sel.value);
+  if (i !== -1) { cajas[i] = nuevo; guardarCajas(cajas); renderCajas(); }
+}
+function eliminarCaja() {
+  const sel = document.getElementById("selector-pestaña");
+  if (!confirm(`¿Eliminar "${sel.value}"?`)) return;
+  guardarCajas(obtenerCajas().filter(x => x !== sel.value));
+  renderCajas(); cargarDatos();
+}
+
+// ──────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────
+document.getElementById("selector-pestaña").addEventListener("change", cargarDatos);
+document.getElementById("nuevo-nombre").addEventListener("keydown", e => {
+  if (e.key === "Enter") agregarComponente();
+});
+
+window.onload = () => {
+  renderCajas();
+  cargarDatos();
+  // Sincronización silenciosa cada 10s para mantener consistencia
+  setInterval(() => { if (!cargando) cargarDatos(true); }, 10000);
+};
+</script>
+</body>
+</html>
