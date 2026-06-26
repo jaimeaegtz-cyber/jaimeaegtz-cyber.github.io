@@ -566,7 +566,7 @@ function mostrarVista(vista) {
 // ──────────────────────────────────────────────────
 function obtenerCajas() {
   return JSON.parse(localStorage.getItem(CAJAS_KEY)) ||
-    ["CAJA 1","CAJA 2","CAJA 3","CAJA 4","Bolsa 5","Caja 6","Caja Roja"];
+    ["CAJA 1(Placas de Desarrollo)","CAJA 2(Baterias)","CAJA 3(Ruedas)","CAJA 4(Motores)","BOLSA 5(Cables)","CAJA 6(Portapilas)","CAJA 7(Protoboards)","Caja grande 1","Caja Pequeña 1","Caja HYPER TOUGH","Caja SURTEK","Conectores"];
 }
 function guardarCajas(lista) { localStorage.setItem(CAJAS_KEY, JSON.stringify(lista)); }
 
