@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administración</title>
+<script>
+  // ── AUTENTICACIÓN ──
+  const _sesion = localStorage.getItem("sesion_usuario");
+  const _rol = localStorage.getItem("sesion_rol");
+  if (!_sesion) {
+    window.location.href = "index.html";
+  } else if (_rol !== "master") {
+    window.location.href = "inventario.html";
+  }
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #060c1a;
+    --card: #111c32;
+    --card2: #162038;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --cyan: #22d3ee;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --muted2: #64748b;
+    --danger: #ef4444;
+    --green: #22c55e;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --sidebar-w: 72px;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 0; gap: 8px; z-index: 100;
+  }
+  .sidebar-logo { font-size: 26px; margin-bottom: 16px; }
+  .nav-btn {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent; color: var(--muted);
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--card2); color: var(--text); border-color: var(--border-hover); }
+  .nav-btn.activo { background: rgba(59,130,246,0.15); color: var(--accent2); border-color: rgba(59,130,246,0.3); }
+
+  #main { margin-left: var(--sidebar-w); min-height: 100vh; padding: 32px 28px; max-width: 900px; }
+
+  .header { margin-bottom: 28px; }
+  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--cyan); }
+  .header p { color: var(--muted); margin-top: 6px; font-size: 14px; }
+
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+  .panel-title { display:flex; align-items:center; gap:10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted2); margin-bottom: 16px; }
+  .badge-count {
+    background: rgba(59,130,246,0.15); color: var(--accent2);
+    border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 700;
+  }
+
+  .user-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; background: var(--card2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 10px;
+  }
+  .user-row:last-child { margin-bottom: 0; }
+  .user-name { font-weight: 600; font-size: 15px; display:flex; align-items:center; gap:8px; }
+  .tag {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .tag.master { background: rgba(96,165,250,0.15); color: var(--accent2); }
+  .tag.aprobado { background: rgba(34,197,94,0.12); color: var(--green); }
+  .tag.pendiente { background: rgba(234,179,8,0.12); color: #facc15; }
+
+  .row-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    height: 36px; padding: 0 16px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-aprobar { background: var(--green); color: #06210f; }
+  .btn-aprobar:hover { background: #16a34a; }
+  .btn-revocar { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+  .btn-revocar:hover { border-color: var(--border-hover); }
+  .btn-eliminar { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+  .btn-eliminar:hover { background: rgba(239,68,68,0.18); }
+
+  .empty-state { text-align: center; padding: 30px 0; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sidebar-logo">📦</div>
+  <a href="inventario.html" class="nav-btn" title="Inventario">📦</a>
+  <a href="admin.html" class="nav-btn activo" title="Administración">🛡️</a>
+  <button class="nav-btn" onclick="cerrarSesion()" title="Cerrar sesión" style="margin-top:auto;">🚪</button>
+</div>
+
+<div id="main">
+  <div class="header">
+    <h1>Panel de <span>Administración</span></h1>
+    <p>Aprueba, revoca o elimina cuentas que se registren en el inventario.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Pendientes de aprobación <span class="badge-count" id="count-pendientes">0</span></div>
+    <div id="lista-pendientes"><div class="empty-state">Cargando...</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Usuarios aprobados <span class="badge-count" id="count-aprobados">0</span></div>
+    <div id="lista-aprobados"><div class="empty-state">Cargando...</div></div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDDejCesX0MLKlr7FzPW6_wGCpyVHFrtHpjCF3dkM3YcgdS4EkFWLsteXD4GL5y_W5vg/exec";
+const sesionUsuario = _sesion;
+
+async function enviar(data) {
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch (e) {
+    return { status: "error", message: e.toString() };
+  }
+}
+
+function cerrarSesion() {
+  localStorage.removeItem("sesion_usuario");
+  localStorage.removeItem("sesion_rol");
+  window.location.href = "index.html";
+}
+
+async function cargarUsuarios() {
+  const resp = await enviar({ action: "listarUsuarios", usuarioAdmin: sesionUsuario });
+
+  if (!resp || resp.status !== "success") {
+    document.getElementById("lista-pendientes").innerHTML =
+      `<div class="empty-state">${resp?.message || "No se pudo cargar la lista."}</div>`;
+    document.getElementById("lista-aprobados").innerHTML = "";
+    return;
+  }
+
+  const usuarios = resp.usuarios || [];
+  const pendientes = usuarios.filter(u => !u.aprobado && u.rol !== "master");
+  const aprobados = usuarios.filter(u => u.aprobado || u.rol === "master");
+
+  document.getElementById("count-pendientes").textContent = pendientes.length;
+  document.getElementById("count-aprobados").textContent = aprobados.length;
+
+  document.getElementById("lista-pendientes").innerHTML = pendientes.length
+    ? pendientes.map(u => `
+      <div class="user-row">
+        <div class="user-name">${u.usuario} <span class="tag pendiente">Pendiente</span></div>
+        <div class="row-actions">
+          <button class="btn-sm btn-aprobar" onclick="aprobar('${u.usuario}')">Aprobar</button>
+          <button class="btn-sm btn-eliminar" onclick="eliminar('${u.usuario}')">Rechazar</button>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="empty-state">No hay solicitudes pendientes 🎉</div>`;
+
+  document.getElementById("lista-aprobados").innerHTML = aprobados.length
+    ? aprobados.map(u => `
+      <div class="user-row">
+        <div class="user-name">${u.usuario} ${u.rol === "master" ? '<span class="tag master">Administrador</span>' : '<span class="tag aprobado">Aprobado</span>'}</div>
+        <div class="row-actions">
+          ${u.rol === "master" ? "" : `
+            <button class="btn-sm btn-revocar" onclick="revocar('${u.usuario}')">Revocar</button>
+            <button class="btn-sm btn-eliminar" onclick="eliminar('${u.usuario}')">Eliminar</button>
+          `}
+        </div>
+      </div>
+    `).join("")
+    : `<div class="empty-state">Todavía no hay usuarios aprobados.</div>`;
+}
+
+async function aprobar(usuario) {
+  const resp = await enviar({ action: "cambiarAprobacion", usuarioAdmin: sesionUsuario, usuarioObjetivo: usuario, aprobado: true });
+  if (!resp || resp.status !== "success") { alert("Error: " + (resp?.message || "")); return; }
+  cargarUsuarios();
+}
+
+async function revocar(usuario) {
+  if (!confirm(`¿Revocar el acceso de "${usuario}"? Podrás volver a aprobarlo más adelante.`)) return;
+  const resp = await enviar({ action: "cambiarAprobacion", usuarioAdmin: sesionUsuario, usuarioObjetivo: usuario, aprobado: false });
+  if (!resp || resp.status !== "success") { alert("Error: " + (resp?.message || "")); return; }
+  cargarUsuarios();
+}
+
+async function eliminar(usuario) {
+  if (!confirm(`¿Eliminar la cuenta de "${usuario}" de forma permanente?`)) return;
+  const resp = await enviar({ action: "eliminarUsuario", usuarioAdmin: sesionUsuario, usuarioObjetivo: usuario });
+  if (!resp || resp.status !== "success") { alert("Error: " + (resp?.message || "")); return; }
+  cargarUsuarios();
+}
+
+window.onload = cargarUsuarios;
+</script>
+</body>
+</html>
