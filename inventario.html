@@ -8,7 +8,7 @@
   // ── AUTENTICACIÓN ──
   // Si no hay sesión activa, mandamos al login ANTES de pintar nada.
   if (!localStorage.getItem("sesion_usuario")) {
-    window.location.href = "index.html";
+    window.location.href = "login.html";
   }
 </script>
 <style>
@@ -227,6 +227,7 @@
   <div class="sidebar-logo">📦</div>
   <button class="nav-btn activo" onclick="mostrarVista('inventario')" title="Inventario">📦</button>
   <button class="nav-btn" onclick="mostrarVista('excel')" title="Hoja de cálculo">📊</button>
+  <a id="btn-admin" href="admin.html" class="nav-btn" title="Administración" style="display:none; text-decoration:none;">🛡️</a>
   <button class="nav-btn" onclick="cerrarSesion()" title="Cerrar sesión" style="margin-top:auto;">🚪</button>
 </div>
 
@@ -642,12 +643,16 @@ document.getElementById("nuevo-nombre").addEventListener("keydown", e => {
 
 function cerrarSesion() {
   localStorage.removeItem("sesion_usuario");
-  window.location.href = "index.html";
+  localStorage.removeItem("sesion_rol");
+  window.location.href = "login.html";
 }
 
 window.onload = () => {
   const usuario = localStorage.getItem("sesion_usuario");
   document.getElementById("usuario-activo").textContent = usuario ? ("👤 " + usuario) : "";
+  if (localStorage.getItem("sesion_rol") === "master") {
+    document.getElementById("btn-admin").style.display = "flex";
+  }
   renderCajas();
   cargarDatos();
   // Sincronización silenciosa cada 10s para mantener consistencia
