@@ -8,7 +8,7 @@
   // ── AUTENTICACIÓN ──
   // Si no hay sesión activa, mandamos al login ANTES de pintar nada.
   if (!localStorage.getItem("sesion_usuario")) {
-    window.location.href = "login.html";
+    window.location.href = "index.html";
   }
 </script>
 <style>
@@ -644,7 +644,7 @@ document.getElementById("nuevo-nombre").addEventListener("keydown", e => {
 function cerrarSesion() {
   localStorage.removeItem("sesion_usuario");
   localStorage.removeItem("sesion_rol");
-  window.location.href = "login.html";
+  window.location.href = "index.html";
 }
 
 window.onload = () => {
