@@ -129,7 +129,13 @@ console.log("rpc:", typeof client.rpc);
     const btn = document.getElementById("btn-login");
     btn.disabled = true; btn.textContent = "Entrando...";
 
-    const { data, error } = await supabase.rpc("iniciar_sesion", { p_usuario: usuario, p_password: password });
+    const { data, error } =
+await client.rpc(
+"iniciar_sesion",
+{
+p_usuario: usuario,
+p_password: password
+});
 
     btn.disabled = false; btn.textContent = "Iniciar sesión";
 
