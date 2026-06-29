@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <link rel="icon" href="caja.png" type="image/png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Iniciar sesión III</title>
-  <style>
+  <style>  
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #060c1a;
@@ -102,6 +102,9 @@
   const SUPABASE_URL = "https://schvhnlxxgobfwkhqrts.supabase.co";
   const SUPABASE_KEY = "sb_publishable_wxUxBDhUoGf5vqRw18DTNA_5K0YHs8r";
   const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  console.log("cliente:", supabase)
+  console.log("rpc:", supabase.rpc)
 
   function mostrarError(msg) {
     const el = document.getElementById("error-msg");
