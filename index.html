@@ -94,12 +94,19 @@
 <!-- Supabase se carga AQUÍ, justo antes del script que lo usa -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Redirigir si ya hay sesión
-  if (localStorage.getItem("sesion_usuario")) {
-    window.location.href = "inventario.html";
-  }
+<script>
+if (localStorage.getItem("sesion_usuario")) {
+  window.location.href = "inventario.html";
+}
 
-const client = window.supabase.createClient(
+const SUPABASE_URL =
+"https://schvhnlxxgobfwkhqrts.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_wxUxBDhUoGf5vqRw18DTNA_5K0YHs8r";
+
+const client =
+window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
@@ -107,54 +114,86 @@ const client = window.supabase.createClient(
 console.log("cliente:", client);
 console.log("rpc:", typeof client.rpc);
 
-  console.log("cliente:", supabase)
-  console.log("rpc:", supabase.rpc)
+function mostrarError(msg){
+  const el =
+  document.getElementById("error-msg");
 
-  function mostrarError(msg) {
-    const el = document.getElementById("error-msg");
-    el.textContent = msg;
-    el.classList.add("visible");
-  }
+  el.textContent = msg;
+  el.classList.add("visible");
+}
 
-  async function iniciarSesion() {
-    const usuario = document.getElementById("usuario").value.trim();
-    const password = document.getElementById("password").value;
-    document.getElementById("error-msg").classList.remove("visible");
+async function iniciarSesion(){
 
-    if (!usuario || !password) {
-      mostrarError("Completa usuario y contraseña.");
-      return;
-    }
+const usuario =
+document.getElementById("usuario")
+.value.trim();
 
-    const btn = document.getElementById("btn-login");
-    btn.disabled = true; btn.textContent = "Entrando...";
+const password =
+document.getElementById("password")
+.value;
 
-    const { data, error } =
+document
+.getElementById("error-msg")
+.classList.remove("visible");
+
+if(!usuario||!password){
+mostrarError(
+"Completa usuario y contraseña."
+);
+return;
+}
+
+const btn =
+document.getElementById(
+"btn-login"
+);
+
+btn.disabled=true;
+btn.textContent=
+"Entrando...";
+
+const {data,error} =
 await client.rpc(
 "iniciar_sesion",
 {
-p_usuario: usuario,
-p_password: password
-});
+p_usuario:usuario,
+p_password:password
+}
+);
 
-    btn.disabled = false; btn.textContent = "Iniciar sesión";
+btn.disabled=false;
 
-    if (error || !data || data.status !== "success") {
-      mostrarError(data?.message || error?.message || "No se pudo conectar con el servidor.");
-      return;
-    }
+btn.textContent=
+"Iniciar sesión";
 
-    localStorage.setItem("sesion_usuario", data.usuario || usuario);
-    localStorage.setItem("sesion_rol", data.rol || "usuario");
-    window.location.href = "inventario.html";
-  }
+if(
+error||
+!data||
+data.status!=="success"
+){
+mostrarError(
+data?.message||
+error?.message||
+"No se pudo conectar"
+);
+return;
+}
 
-  document.getElementById("usuario").addEventListener("keydown", e => {
-    if (e.key === "Enter") document.getElementById("password").focus();
-  });
-  document.getElementById("password").addEventListener("keydown", e => {
-    if (e.key === "Enter") iniciarSesion();
-  });
+localStorage.setItem(
+"sesion_usuario",
+data.usuario
+);
+
+localStorage.setItem(
+"sesion_rol",
+data.rol
+);
+
+window.location.href=
+"inventario.html";
+
+}
+</script>
 </script>
 </body>
 </html>
