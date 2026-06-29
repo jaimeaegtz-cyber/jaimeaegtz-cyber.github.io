@@ -99,9 +99,13 @@
     window.location.href = "inventario.html";
   }
 
-  const SUPABASE_URL = "https://schvhnlxxgobfwkhqrts.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_wxUxBDhUoGf5vqRw18DTNA_5K0YHs8r";
-  const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("cliente:", client);
+console.log("rpc:", typeof client.rpc);
 
   console.log("cliente:", supabase)
   console.log("rpc:", supabase.rpc)
